@@ -29,8 +29,8 @@
 
   # systemPackages
   environment.systemPackages = with pkgs; [ 
-    vim curl wget nano bind kubectl helm iptables openvpn
-    python3 nodejs-12_x docker-compose ];
+    neovim curl wget bind helm iptables openvpn python3
+  ];
 
   services.openssh = {
       enable = true;
@@ -39,10 +39,6 @@
 
   programs.zsh = {
       enable = true;
-      ohMyZsh = {
-          enable = true;
-          theme = "bira";
-      };
   };
 
 
@@ -77,6 +73,6 @@
   };
   users.extraUsers.root.openssh.authorizedKeys.keys = [
       # Your ssh key
-      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDqlXJv/noNPmZMIfjJguRX3O+Z39xeoKhjoIBEyfeqgKGh9JOv7IDBWlNnd3rHVnVPzB9emiiEoAJpkJUnWNBidL6vPYn13r6Zrt/2WLT6TiUFU026ANdqMjIMEZrmlTsfzFT+OzpBqtByYOGGe19qD3x/29nbszPODVF2giwbZNIMo2x7Ww96U4agb2aSAwo/oQa4jQsnOpYRMyJQqCUhvX8LzvE9vFquLlrSyd8khUsEVV/CytmdKwUUSqmlo/Mn7ge/S12rqMwmLvWFMd08Rg9NHvRCeOjgKB4EI6bVwF8D6tNFnbsGVzTHl7Cosnn75U11CXfQ6+8MPq3cekYr lucernae@lombardia-N43SM"
+      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDtDNBQCp2rwfY87likruDHMvSms73D6+sZLEo6VcdX8+uabQMQN6fxsdX8DLLflaDqphsLv8kqYnfgoxB5qv+fjlPxGEuVlhrXKXqdLPJbdE5o/p3WM4VGLbFw/pfn50RzixKabwDLaJipkqm5Y78N0L9DkhafheUvWxsNJZYPRaPpEGqJfValM89bKWQbWS/siIXPiB1EYoM4PLxuVFpqm7BL7G/Y8pMRMFcj+IfHx+8WN0pCDtYowvcp9Ay8Qy1m1uSJ+TfapMnhCWeJlM3uPP+/F7Lv8fRhNRYtS2RrCq/W6/dsdLFjeTYtxgPD+wqxpLlBjiAy3NCxFsYZFGIR tau@tau"
   ];
 }
