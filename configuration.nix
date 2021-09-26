@@ -35,8 +35,8 @@
 
   # systemPackages
   environment.systemPackages = with pkgs; [ 
-    vim curl wget nano bind kubectl helm iptables openvpn
-    python3 nodejs-12_x docker-compose ];
+    vim curl wget nano bind helm iptables python3 nodejs-12_x
+  ];
 
   services.openssh = {
       enable = true;
@@ -45,16 +45,16 @@
 
   # Some sample service.
   # Use dnsmasq as internal LAN DNS resolver.
-  services.dnsmasq = {
-      enable = false;
-      servers = [ "8.8.8.8" "8.8.4.4" "1.1.1.1" ];
-      extraConfig = ''
-        address=/fenrir.test/192.168.100.6
-        address=/recalune.test/192.168.100.7
-        address=/eth.nixpi.test/192.168.100.3
-        address=/wlan.nixpi.test/192.168.100.4
-      '';
-  };
+  /* services.dnsmasq = { */
+  /*     enable = false; */
+  /*     servers = [ "8.8.8.8" "8.8.4.4" "1.1.1.1" ]; */
+  /*     extraConfig = '' */
+  /*       address=/fenrir.test/192.168.100.6 */
+  /*       address=/recalune.test/192.168.100.7 */
+  /*       address=/eth.nixpi.test/192.168.100.3 */
+  /*       address=/wlan.nixpi.test/192.168.100.4 */
+  /*     ''; */
+  /* }; */
 
   # services.openvpn = {
   #     # You can set openvpn connection
@@ -67,10 +67,10 @@
 
   programs.zsh = {
       enable = true;
-      ohMyZsh = {
-          enable = true;
-          theme = "bira";
-      };
+      /* ohMyZsh = { */
+      /*     enable = true; */
+      /*     theme = "bira"; */
+      /* }; */
   };
 
 
@@ -91,7 +91,7 @@
       useDHCP = false;
       ipv4.addresses = [{
         # I used static IP over WLAN because I want to use it as local DNS resolver
-        address = "192.168.100.4";
+        address = "192.168.100.110";
         prefixLength = 24;
       }];
     };
@@ -105,17 +105,17 @@
     };
 
     # Enabling WIFI
-    wireless.enable = true;
-    wireless.interfaces = [ "wlan0" ];
-    # If you want to connect also via WIFI to your router
-    wireless.networks."WIFI-SSID".psk = "wifipass";
-    # You can set default nameservers
-    nameservers = [ "192.168.100.3" "192.168.100.4" "192.168.100.1" ];
-    # You can set default gateway
-    defaultGateway = {
-      address = "192.168.100.1";
-      interface = "wlan0";
-    };
+    /* wireless.enable = true; */
+    /* wireless.interfaces = [ "wlan0" ]; */
+    /* # If you want to connect also via WIFI to your router */
+    /* wireless.networks."WIFI-SSID".psk = "wifipass"; */
+    /* # You can set default nameservers */
+    /* nameservers = [ "8.8.8.8" "8.8.4.4" ]; */
+    /* # You can set default gateway */
+    /* defaultGateway = { */
+    /*   address = "192.168.100.1"; */
+    /*   interface = "wlan0"; */
+    /* }; */
   };
 
   # put your own configuration here, for example ssh keys:
@@ -139,6 +139,6 @@
   };
   users.extraUsers.root.openssh.authorizedKeys.keys = [
     # This is my public key
-     "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDqlXJv/noNPmZMIfjJguRX3O+Z39xeoKhjoIBEyfeqgKGh9JOv7IDBWlNnd3rHVnVPzB9emiiEoAJpkJUnWNBidL6vPYn13r6Zrt/2WLT6TiUFU026ANdqMjIMEZrmlTsfzFT+OzpBqtByYOGGe19qD3x/29nbszPODVF2giwbZNIMo2x7Ww96U4agb2aSAwo/oQa4jQsnOpYRMyJQqCUhvX8LzvE9vFquLlrSyd8khUsEVV/CytmdKwUUSqmlo/Mn7ge/S12rqMwmLvWFMd08Rg9NHvRCeOjgKB4EI6bVwF8D6tNFnbsGVzTHl7Cosnn75U11CXfQ6+8MPq3cekYr lucernae@lombardia-N43SM"
+     "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDtDNBQCp2rwfY87likruDHMvSms73D6+sZLEo6VcdX8+uabQMQN6fxsdX8DLLflaDqphsLv8kqYnfgoxB5qv+fjlPxGEuVlhrXKXqdLPJbdE5o/p3WM4VGLbFw/pfn50RzixKabwDLaJipkqm5Y78N0L9DkhafheUvWxsNJZYPRaPpEGqJfValM89bKWQbWS/siIXPiB1EYoM4PLxuVFpqm7BL7G/Y8pMRMFcj+IfHx+8WN0pCDtYowvcp9Ay8Qy1m1uSJ+TfapMnhCWeJlM3uPP+/F7Lv8fRhNRYtS2RrCq/W6/dsdLFjeTYtxgPD+wqxpLlBjiAy3NCxFsYZFGIR tau@tau"
   ];
 }
