@@ -39,8 +39,7 @@ jobs:
           name: sd-image.img
           path: ./result/sd-image/*.img*
 
-
-  build-default-image:
+  build-2105-image:
     name: Build 21.05 image
     if: ${{ github.event.inputs.environmentName == '21.05' }}
     runs-on: ubuntu-20.04
@@ -71,4 +70,3 @@ jobs:
         with:
           name: sd-image.img
           path: ./result/sd-image/*.img*
-
