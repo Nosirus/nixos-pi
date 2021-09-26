@@ -43,7 +43,6 @@ jobs:
     name: Build 21.05 image
     if: ${{ github.event.inputs.environmentName == '21.05' }}
     runs-on: ubuntu-20.04
-    needs: setup-build-env
     steps:
       - uses: actions/checkout@v2.3.4
       - uses: cachix/install-nix-action@v12
