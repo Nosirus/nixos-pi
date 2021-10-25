@@ -2,59 +2,101 @@
 {
 
   imports = [
-    <nixpkgs/nixos/modules/installer/cd-dvd/sd-image-aarch64.nix>
+    # <nixpkgs/nixos/modules/installer/sd-card/sd-image-aarch64.nix>
+    <nixpkgs/nixos/modules/installer/sd-card/sd-image-aarch64-installer.nix>
 
     # For nixpkgs cache
     <nixpkgs/nixos/modules/installer/cd-dvd/channel.nix>
   ];
 
-  sdImage.compressImage = true;
+  sdImage.compressImage = false;
   
-
   # NixOS wants to enable GRUB by default
   boot.loader.grub.enable = false;
-  # Enables the generation of /boot/extlinux/extlinux.conf
-  boot.loader.generic-extlinux-compatible.enable = true;
- 
-  # !!! Set to specific linux kernel version
-  boot.kernelPackages = pkgs.linuxPackages_5_4;
 
-  # !!! Needed for the virtual console to work on the RPi 3, as the default of 16M doesn't seem to be enough.
-  # If X.org behaves weirdly (I only saw the cursor) then try increasing this to 256M.
-  # On a Raspberry Pi 4 with 4 GB, you should either disable this parameter or increase to at least 64M if you want the USB ports to work.
+  # Enables the generation of /boot/extlinux/extlinux.conf
+  boot.loader.generic-extlinux-compatible.enable = true;  
+
   boot.kernelParams = ["cma=256M"];
+  boot.loader.raspberryPi.uboot.enable = true;
+  boot.loader.raspberryPi = {
+    enable = true;
+    version = 3;
+  };
+  # boot.loader.raspberryPi.firmwareConfig = ''
+    # gpu_mem=256
+  # '';
+  
+  # !!! Set to specific linux kernel version
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+  #boot.kernelPackages = pkgs.linuxPackages_5_4;
+  #boot.kernelPackages = pkgs.linuxPackages_rpi3;
 
   # Settings above are the bare minimum
   # All settings below are customized depending on your needs
 
   # systemPackages
   environment.systemPackages = with pkgs; [ 
-    neovim curl wget bind helm iptables openvpn python3
-  ];
+    curl wget nano ];
 
-  services.openssh = {
-      enable = true;
-      permitRootLogin = "yes";
+  services = {
+      openssh = {
+          enable = true;
+          permitRootLogin = "yes";
+      };
+      adguardhome = {
+          enable = true;
+      };
+      unbound = {
+          enable = true;
+      };
+      dnsmasq = {
+          enable = false;
+      };
   };
-
+ 
   programs.zsh = {
       enable = true;
   };
-
-
-  virtualisation.docker.enable = true;
-
-  networking.firewall.enable = false;
-
-  # WiFi
-  hardware = {
-    enableRedistributableFirmware = true;
-    firmware = [ pkgs.wireless-regdb ];
+  
+  # Select internationalisation properties.
+  i18n.defaultLocale = "fr_FR.UTF-8";
+  console = {
+    font = "Lat2-Terminus16";
+    keyMap = "fr";
   };
+
+  time.timeZone = "Europe/Paris";
+
+  networking = {
+      firewall.enable = false;
+      hostName = "nixpi";
+      interfaces.eth0 = {
+      useDHCP = true;
+    };
+  };
+  
+  # WiFi
+  # hardware = {
+    # enableRedistributableFirmware = true;
+    # #firmware = [ pkgs.wireless-regdb ];
+  # };
+  
+  hardware.enableRedistributableFirmware = true;
+  networking.wireless.enable = true;
+  
+  # Preserve space by disabling documentation and enaudo ling
+  # automatic garbage collection
+  documentation.nixos.enable = false;
+  nix.gc.automatic = true;
+  nix.gc.options = "--delete-older-than 30d";
+  boot.cleanTmpDir = true;
+
+  nix.trustedUsers = [ "nixos" ];
 
   # put your own configuration here, for example ssh keys:
   users.defaultUserShell = pkgs.zsh;
-  users.mutableUsers = true;
+  users.mutableUsers = false;
   users.groups = {
     nixos = {
       gid = 1000;
@@ -64,15 +106,17 @@
   users.users = {
     nixos = {
       uid = 1000;
+      isNormalUser = true;
       home = "/home/nixos";
       name = "nixos";
       group = "nixos";
       shell = pkgs.zsh;
-      extraGroups = [ "wheel" "docker" ];
+      extraGroups = [ "wheel" ];
+      #hashedPassword = "4369C0B1067755C9EC057024EC1BE4ECB27955683A4BEEBD638DBF6CB026D73D1224B18A9370177D3FB164F9A054CB7A70DD0BF7E053BC91FA167D55503B3CC6";
     };
   };
   users.extraUsers.root.openssh.authorizedKeys.keys = [
       # Your ssh key
-      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDtDNBQCp2rwfY87likruDHMvSms73D6+sZLEo6VcdX8+uabQMQN6fxsdX8DLLflaDqphsLv8kqYnfgoxB5qv+fjlPxGEuVlhrXKXqdLPJbdE5o/p3WM4VGLbFw/pfn50RzixKabwDLaJipkqm5Y78N0L9DkhafheUvWxsNJZYPRaPpEGqJfValM89bKWQbWS/siIXPiB1EYoM4PLxuVFpqm7BL7G/Y8pMRMFcj+IfHx+8WN0pCDtYowvcp9Ay8Qy1m1uSJ+TfapMnhCWeJlM3uPP+/F7Lv8fRhNRYtS2RrCq/W6/dsdLFjeTYtxgPD+wqxpLlBjiAy3NCxFsYZFGIR tau@tau"
+      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCvwTiBiZsTh9NyU+JVDgRF7TWfoyVWUVB+wwvdY54FkL797ckdxUQBLCiBwJfxbO3u00hOz5Ibrw80WJVpGV0D5Flf7CKapB1r0/j4Jh2w6nRtOEnt25XnbHiL+F7RYTBfR0awZ9nMLuJecJ7XSYaU688fYZlKkRbshp4qViif/J5bj/7nG9ySfJWgFsNEz6J2x2yBaeeZYTRXt/PJsDW8Rpsdud8U3Ob+jodfunJlxMWELN4KpE9sL8buDy3kVgUGuC2jr8R4RoKH7EKrFDrHhwzYozGsYzmYnWmYIeatOKIy3ueCjtR7MlmulUAqWVnSBtcT+pf9FVlMqtiWqx4Ls/XvuABKoXDBr7M2nU16aMGB0RW1eSUDkmv/VZUpDUQX9MRw2yBkPPMGay8/ozJxskqCYvkqPvloGlyUNrB+R0Whc/QJBBUkHH8kOC69TwwY2pzLi2SltrIK2JA+E4LLNpSFrFjApcxHqm3pdS1tnqLnrVzO60tUqe/FAJ+jfPc= root@Cobblepot"
   ];
 }
